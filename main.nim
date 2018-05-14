@@ -1,17 +1,30 @@
+import xmlparser
+import xmltree
+import httpclient
+import streams
+import strutils
+import os
+import json
 import htmlparser
 import streams
+
 let tokenurl = ""
+
 let file = "links.txt"
 var
   client = newHttpClient()
   data = client.getContent("https://n-o-d-e.net/rss/rss.xml")
   xml : XmlNode = parseXML(newStringStream(data)).child("channel")
   itemsXML : seq[XmlNode] = xml.findAll("item")
+
+
 let fsi = newFileStream(file, fmRead)
 let savedLinks = fsi.readAll()
 fsi.close()
+
 var fso = newFileStream(file, fmWrite)
 fso.write(savedLinks)
+
 for i in 0..high(itemsXML):
   if itemsXML[i].child("link") != nil:
       let link = itemsXML[i].child("link").innerText
@@ -28,6 +41,7 @@ for i in 0..high(itemsXML):
                 videolinks.add("**$1** $2\n" % [a.innerText, a.attr("href")])
                 if a.innerText.contains("Youtube"):
                   youtubeLink = a.attr("href")
+
               client.headers = newHttpHeaders({ "Content-Type": "application/json" })
               let body = %*{
                   "username": "Node",
@@ -42,7 +56,7 @@ for i in 0..high(itemsXML):
                       }
                     }]
                   }
-              echo body
+              echo body 
               let response = client.request(tokenurl, httpMethod = HttpPost, body = $body)
               echo response.status
               echo response.body

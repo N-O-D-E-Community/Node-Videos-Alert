@@ -1,16 +1,7 @@
-import xmlparser
-import xmltree
-import httpclient
-import streams
-import strutils
-import os
-import json
 import htmlparser
 import streams
-
 let tokenurl = ""
 let file = "links.txt"
-
 var
   client = newHttpClient()
   data = client.getContent("https://n-o-d-e.net/rss/rss.xml")
